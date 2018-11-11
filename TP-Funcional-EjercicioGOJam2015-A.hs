@@ -58,12 +58,8 @@ contarCuantaGenteSeLevanta (c:cs) n z =  h z n (digitToInt c) (contarCuantaGente
                                           where h z n nc r1 r2= if (z >= n) then r1 else r2
 
 gestionarEscrituraDeLTest::(Int,Int) -> String
-gestionarEscrituraDeLTest (x, y) = "Case #"++ (intToString x) ++ ": " ++(intToDigit y):""
+gestionarEscrituraDeLTest (x, y) = "Case #"++ (intToString x) ++ ": " ++(intToString y)
                                      
-gestionarLaEsctiruraAllTest:: [(Int,Int)] -> String
-gestionarLaEsctiruraAllTest [] = []
-gestionarLaEsctiruraAllTest (x:xs) = (gestionarEscrituraDeLTest x) ++ ('\n':gestionarLaEsctiruraAllTest xs)
-
 gestionarLaEsctiruraAllTestFold:: [(Int,Int)] -> String
 gestionarLaEsctiruraAllTestFold xs = foldr(\x r -> (gestionarEscrituraDeLTest x) ++('\n':r ) ) [] xs
 
@@ -83,18 +79,11 @@ gestionarCasos f = do
                      xsSep <- fmap separarPorCasosFold (return xs)
                      xsRes <- fmap cantDeAmigosPorTest (return xsSep)
                      xsResEsc <- fmap gestionarLaEsctiruraAllTestFold (return xsRes)
-                     --xsText <-  fmap stringToText (return xsResEsc)
                      save xsResEsc
                      print xsSep
                      print xsRes
                      print xsResEsc 
                      
-
-main = do 
-       x <- readFile "sarasa.txt"
-       xs <- fmap sacarEntersAndEspaciosFold (return x)
-       save xs
-       print xs 
 
 
                                
