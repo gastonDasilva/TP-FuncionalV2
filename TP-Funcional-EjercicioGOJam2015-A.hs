@@ -1,5 +1,6 @@
 import Prelude
 import Data.Char
+import qualified Data.Text as T
 
 save :: (Show a)=> a -> IO() 
 save x = writeFile "datosOut.txt" (show x)
@@ -28,13 +29,11 @@ concatenarHead c (cs:css) = (c:cs):css
 
 
 cantDeAmigosPorTest:: [[Char]]-> [(Int,Int)]
-cantDeAmigosPorTest css  = (separarEnTuplasPorTest  css 1)
+cantDeAmigosPorTest css  = (separarEnTuplasPorTest  (tail css) 1)
 
 separarEnTuplasPorTest:: [[Char]]-> Int-> [(Int,Int)]
 separarEnTuplasPorTest [] n = []
 separarEnTuplasPorTest (cs:css) n = (n, cantidadDeAmigosNecesarios cs): (separarEnTuplasPorTest css (n+1)) 
-
-
 
 
 cantidadDeAmigosNecesarios:: [Char]->Int
@@ -58,9 +57,23 @@ contarCuantaGenteSeLevanta [] n z = z
 contarCuantaGenteSeLevanta (c:cs) n z =  h z n (digitToInt c) (contarCuantaGenteSeLevanta cs (n+1) ((digitToInt c) + z) ) (contarCuantaGenteSeLevanta cs (n+1)  z )
                                           where h z n nc r1 r2= if (z >= n) then r1 else r2
 
-
+gestionarEscrituraDeLTest::(Int,Int) -> String
+gestionarEscrituraDeLTest (x, y) = "Case #"++ (intToString x) ++ ": " ++(intToDigit y):""
                                      
+gestionarLaEsctiruraAllTest:: [(Int,Int)] -> String
+gestionarLaEsctiruraAllTest [] = []
+gestionarLaEsctiruraAllTest (x:xs) = (gestionarEscrituraDeLTest x) ++ ('\n':gestionarLaEsctiruraAllTest xs)
 
+gestionarLaEsctiruraAllTestFold:: [(Int,Int)] -> String
+gestionarLaEsctiruraAllTestFold xs = foldr(\x r -> (gestionarEscrituraDeLTest x) ++('\n':r ) ) [] xs
+
+
+stringToText:: String -> T.Text
+stringToText s = T.pack s
+
+
+intToString:: Int->String
+intToString n =  show n 
 
 
 gestionarCasos::  FilePath ->IO() 
@@ -68,9 +81,14 @@ gestionarCasos f = do
                      x <- readFile f
                      xs <- fmap sacarEntersAndEspaciosFold (return x)
                      xsSep <- fmap separarPorCasosFold (return xs)
-                     xsRes <- fmap cantDeAmigosPorTest (return xsSep) 
-                     save xsRes 
-                     print xsRes 
+                     xsRes <- fmap cantDeAmigosPorTest (return xsSep)
+                     xsResEsc <- fmap gestionarLaEsctiruraAllTestFold (return xsRes)
+                     --xsText <-  fmap stringToText (return xsResEsc)
+                     save xsResEsc
+                     print xsSep
+                     print xsRes
+                     print xsResEsc 
+                     
 
 main = do 
        x <- readFile "sarasa.txt"
