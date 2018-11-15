@@ -33,7 +33,7 @@ separarEnTuplasPorTest (cs:css) n = (n, cantidadDeAmigosNecesarios cs): (separar
 
 
 cantidadDeAmigosNecesarios:: [Char]->Int
-cantidadDeAmigosNecesarios cs = agregarAmigoSiEsNecesario cs  0 -- if (esNecesarioAgregarAmigos cs) then (agregarAmigo cs)
+cantidadDeAmigosNecesarios cs = agregarAmigoSiEsNecesario cs  0 
 
 agregarAmigoSiEsNecesario::[Char]->Int ->Int
 agregarAmigoSiEsNecesario cs n  = if (esNecesarioAgregarAmigos cs )then agregarAmigoSiEsNecesario (agregarAmigo  cs (cantCharsForTimidez cs) ) (n+1) else n 
@@ -51,8 +51,8 @@ sacarTuMaximoDeTimidez:: [Char] -> [Char]
 sacarTuMaximoDeTimidez cs = drop (cantCharsForTimidez cs) cs 
 
 cantCharsForTimidez:: [Char] -> Int
-cantCharsForTimidez [] = 0
-cantCharsForTimidez (c:cs) = if (c /= ' ') then 1+ (cantCharsForTimidez cs) else 1 
+cantCharsForTimidez cs = foldr(\c r -> if ( c /= ' ') then 1 + r else 1) 0 cs
+ 
 
 esNecesarioAgregarAmigos:: [Char]-> Bool
 esNecesarioAgregarAmigos cs =  h (sacarTuMaximoDeTimidez cs)  ( dameTuMaximoDeTimidez cs) 
@@ -70,10 +70,6 @@ gestionarLaEsctiruraAllTestFold:: [(Int,Int)] -> String
 gestionarLaEsctiruraAllTestFold xs = foldr(\x r -> (gestionarEscrituraDeLTest x) ++('\n':r ) ) [] xs
 
 
-stringToText:: String -> T.Text
-stringToText s = T.pack s
-
-
 intToString:: Int->String
 intToString n =  show n 
 
@@ -86,11 +82,11 @@ cargarDatos f = do
                      x <- readFile f
                      xsSep <- fmap separarPorCasosEntersFold (return x)
                      xsRes <- fmap cantDeAmigosPorTest (return xsSep)
-                     xsResEsc <- fmap gestionarLaEsctiruraAllTestFold (return xsRes)
-                     save xsResEsc
+                     result <- fmap gestionarLaEsctiruraAllTestFold (return xsRes)
+                     save result 
                      --print x 
                      --print xsRes
-                     --print xsResEsc 
+                     --print result 
 
 
 ver:: FilePath ->IO()
